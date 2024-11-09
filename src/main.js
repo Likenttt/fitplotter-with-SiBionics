@@ -372,7 +372,16 @@ document.addEventListener("DOMContentLoaded", function () {
     let chartdataType = "line",
       markerType = "none",
       markerSize = 0;
+    let indexLabel = null;
     if (yobj.value.slice(0, 3) === "lap" && xobj.value === "timestamp") {
+      chartdataType = "scatter";
+      markerType = "triangle";
+      markerSize = 8;
+    }
+    if (
+      yobj.value === "bloodSugar" &&
+      (xobj.value === "distance" || xobj.value === "timestamp")
+    ) {
       chartdataType = "scatter";
       markerType = "triangle";
       markerSize = 8;
