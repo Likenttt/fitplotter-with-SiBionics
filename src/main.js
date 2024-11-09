@@ -1044,7 +1044,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (document.getElementById("openmode").value === "manualmode") {
       document.getElementById("ylist").dispatchEvent(new Event("change"));
     } else {
-      automodePlot(["heart_rate", "pace", "HRE"]) == 0
+      automodePlot(["heart_rate", "pace", "bloodSugar"]) == 0
         ? automodePlot(["speed"]) == 0
           ? automodePlot(["total_elapsed_time", "avg_heart_rate", "avg_HRE"]) ==
             0
