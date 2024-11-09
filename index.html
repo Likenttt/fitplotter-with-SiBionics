@@ -1,174 +1,255 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./src/leaflet/dist/leaflet.css" />
+    <script src="./src/leaflet/dist/leaflet.js"></script>
+    <script
+      type="text/javascript"
+      src="./src/canvasjs/canvasjs.min.js"
+    ></script>
 
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="./src/leaflet/dist/leaflet.css" />
-	<script src="./src/leaflet/dist/leaflet.js"></script>
-	<script type="text/javascript" src="./src/canvasjs/canvasjs.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="./src/xlsx.full.min.js"></script>
+    <script>
+      var module = {};
+    </script>
 
-	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-	
-	<script>var module = {};</script>
-	<script src=./src/fit-parser.js></script>
-	<script src=./src/tkl-parser.js></script>
-	<script src=./src/main.js></script>
+    <script src="./src/fit-parser.js"></script>
+    <script src="./src/tkl-parser.js"></script>
+    <script src="./src/main.js"></script>
 
-	<style>
-	* {
-		box-sizing: border-box;
-	  }
+    <style>
+      * {
+        box-sizing: border-box;
+      }
 
-	.container { border: 1p;  padding: 6px;}
-	.column1 { width: 50%; float: left; padding: 5px; }	
-	.column2 { width: 50%; height: 600px; float: left; padding: 2px;}  
+      .container {
+        border: 1p;
+        padding: 6px;
+      }
+      .column1 {
+        width: 50%;
+        float: left;
+        padding: 5px;
+      }
+      .column2 {
+        width: 50%;
+        height: 600px;
+        float: left;
+        padding: 2px;
+      }
 
-	.modal {
-  		display: none; /* Hidden by default */
-  		position: fixed; /* Stay in place */
-  		z-index: 1; /* Sit on top */
-		padding-top: 100px; /* Location of the box */
-		left: 0;
-		top: 0;
-		width: 50%; /* Full width */
-		height: 100%; /* Full height */
-		overflow: auto; /* Enable scroll if needed */
-  		background-color: rgb(0,0,0); /* Fallback color */
-  		background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-	}
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 50%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0, 0, 0); /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+      }
 
-	/* Modal Content */
-	.modal-content {
-  		position: relative;
-  		background-color: #fefefe;
-  		margin: auto;
-  		padding: 8px;
-  		border: auto; /* 0px solid #088; */
-  		width: 180px;
-  		left: 0;
-  		top: 0;
-	}
+      /* Modal Content */
+      .modal-content {
+        position: relative;
+        background-color: #fefefe;
+        margin: auto;
+        padding: 8px;
+        border: auto; /* 0px solid #088; */
+        width: 180px;
+        left: 0;
+        top: 0;
+      }
 
-	/* The Close Button */
+      /* The Close Button */
 
-	.close {
-  		color: #aaaaaa;
-  		float: right;
-  		font-size: 24px;
-  		font-weight: bold;
-	}
+      .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 24px;
+        font-weight: bold;
+      }
 
-	.close:hover,
-	.close:focus {
-  		color: #000;
-  		text-decoration: none;
-  		cursor: pointer;
-	}
+      .close:hover,
+      .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+      }
+    </style>
+  </head>
 
-	</style>
+  <body>
+    <div style="margin-bottom: 10px">
+      <span style="display: flex; align-items: center">
+        <a
+          href="https://mp.weixin.qq.com/s/mHUYSeMrOLZeOeX-QKMAvQ"
+          target="_blank"
+          style="margin-right: 10px"
+        >
+          [如何获得硅基动感血糖文件?]
+        </a>
+        <label for="sibionicsFile"><b>硅基动感血糖 Excel 文件: </b></label>
+        <input
+          id="sibionicsFile"
+          type="file"
+          value=""
+          accept=".xls, .xlsx"
+          style="
+            padding: 0px;
+            width: 200px;
+            background: #ddd;
+            size: 1;
+            margin-right: 20px;
+          "
+        />
+      </span>
+      <span style="display: flex; align-items: center; margin-bottom: 10px">
+        <a
+          href="https://support.garmin.com/zh-CN/?faq=W1TvTPW8JZ6LfJSfK512Q8"
+          target="_blank"
+          style="margin-right: 10px"
+        >
+          [如何获得FIT文件?]
+        </a>
+        <label for="myfile"><b>FIT文件:</b></label>
+        <input
+          id="myfile"
+          type="file"
+          value=""
+          accept=".fit, .tkl"
+          style="
+            padding: 0px;
+            width: 200px;
+            background: #ddd;
+            size: 1;
+            margin-right: 20px;
+          "
+        />
 
-</head>
+        <label for="files" style="display: none"
+          ><b>&nbsp Loaded files:</b></label
+        >
+        <select name="files" id="files" style="display: none"></select>
+      </span>
+    </div>
 
-<body>
-		<span>
-			<label for="myfile"><b>Local:</b></label>
-			<input id="myfile" type="file" value="" accept=".fit, .tkl" 
-			style="padding: 0px; width:24mm; background: #ddd; size: 1"/>
-			&nbsp &nbsp &nbsp
-			<label for="selectURL"><b>URL:</b></label>
-			<select name="selectURL" id="selectURL"> 
-				<option value="https://connect.garmin.com/modern/activity/xxxxxxxxxx" selected> Garmin</option>
-				<option value="https://www.strava.com/activities/xxxxxxxxxx">Strava</option>
-			</select>
-			<input id="downloadURL" type="text" value="https://connect.garmin.com/modern/activity/xxxxxxxxxx" 
-				style="width:340px"/> 
-			<input id="download" type="button" value='Download'/> 
-			&nbsp
-			<label for="files"><b>&nbsp Loaded files:</b></label>
-			<select name="files" id="files" style="min-width: 120px"></select>
-		</span>
-		&nbsp &nbsp 
-		<select name="mode" id="openmode"> 
-			<option value="automode"> auto mode</option>
-			<option value="manualmode">manual add</option>
-		</select>
-		<p style="line-height: 30px;"> 
-		&nbsp  &nbsp 
-		<label for="xaxis">x-axis:</label>
-		<select name="x" id="xaxis" style="min-width: 80px">
-		</select>
-		&nbsp  &nbsp 
-		<label for="ylist">y-axis:</label>
-		<select name="y" id="ylist" style="min-width: 80px"></select>		
-		&nbsp  &nbsp &nbsp  &nbsp 
-		<input id="update" type="button" value='Update plot'/> 
-		
-		<input id="clean" type="button" value='Clean plot'/> 
-		&nbsp  &nbsp &nbsp  &nbsp 
-		<input id="updateMap" type="button" value='Update map'/> 
-		
-		<input id="cleanMap" type="button" value='Clean map'/> 
-		&nbsp  &nbsp  &nbsp  &nbsp 
-		<input id="reload" type="button" value='Reload'/> 
-	
-		<div class="container">
+    <select name="mode" id="openmode" style="display: none">
+      <option value="automode" selected>自动模式</option>
+      <option value="manualmode">手动添加</option>
+    </select>
+    <p style="line-height: 30px">
+      &nbsp &nbsp
 
-		<div class="column1" id="plotarea" style="width:50%; height:600px; padding-left: 0pt; margin-bottom: 10px;"></div>
+      <label for="xaxis">X轴:</label>
+      <select name="x" id="xaxis" style="min-width: 80px"></select>
+      &nbsp &nbsp
+      <label for="ylist">Y轴:</label>
+      <select name="y" id="ylist" style="min-width: 80px"></select>
+      &nbsp &nbsp &nbsp &nbsp
 
-		<div class="column2" id="map" style="width:50%; height:600px; padding-right: 0pt; margin-bottom: 10px;"></div>
+      <input id="update" type="button" value="更新图表" />
 
-	</div>
+      <input id="clean" type="button" value="清除图表" />
+      &nbsp &nbsp &nbsp &nbsp
+      <input id="updateMap" type="button" value="更新地图" />
 
-			<!-- The Modal -->
-			<div id="myModal" class="modal">
-				<!-- Modal content -->
-				<div class="modal-content">
-	  				<span class="close">&times;</span>
-		   			<span>
-		   				<label for="lineThickness">Thickness: &nbsp Color:</label> <br>
-		   				<select name="lineThickness" id="lineThickness" style="border: 5px;">
-			  				<!-- <option value=''>Thickness:</option> -->
-			  				<option value=0.5>&nbsp &nbsp &nbsp &nbsp &nbsp   0.5</option>
-			  				<option value=  1>&nbsp &nbsp &nbsp &nbsp &nbsp   1.0</option>
-			  				<option value=  2>&nbsp &nbsp &nbsp &nbsp &nbsp   2.0</option>
-			  				<option value=  4>&nbsp &nbsp &nbsp &nbsp &nbsp   4.0</option>
-			  				<option value=  8>&nbsp &nbsp &nbsp &nbsp &nbsp   8.0</option>            
-		  				</select>  
-		  			</span>
-		  			<input type="color" id="lineColοr" name="lineColοr" value="#00ff00" />
-					<!-- <p>  -->
-						<!-- <label for="min">Min:</label> <input type="number" id="miny" name="miny" maxlength=5> -->
-						<!-- <label for="max">Max:</label> <input type="number" id="maxy" name="maxy" maxlength=5> -->
-					<!-- </p>  -->
-  				</div>  
-			</div>
+      <input id="cleanMap" type="button" value="清除地图" />
+      &nbsp &nbsp &nbsp &nbsp
+      <input id="reload" type="button" value="重新加载" />
+    </p>
 
+    <div class="container">
+      <div
+        class="column1"
+        id="plotarea"
+        style="
+          width: 50%;
+          height: 600px;
+          padding-left: 0pt;
+          margin-bottom: 10px;
+        "
+      ></div>
 
-	<p style="line-height: 60px;"> 
-		<label for="zoom">zoom:</label>
-		<select name="zoom" id="zoom"> 
-			<option value="x" selected> x-axis</option>
-			<option value="xy">x and y</option>
-			<option value="y">y-axis</option>
-		</select>
-		<!-- input id="saveRange" type="button" value='Save range'/> -->
-		&nbsp  &nbsp 
-		<label for="legendaction">&nbsp &nbsp Click in the legend:</label>
-		<select name="legendaction" id="legendaction">
-		  <option value="hide_show">Hide/Show curve</option>
-		  <option value="change">Thickness/color</option>
-		  <option value="remove_curve">Remove curve</option>
-		  <option value="filter_curve">Apply filter to curve</option>
-		</select>
-		&nbsp  &nbsp 
-		<label for="medfil1bin">Median filter size: </label> 
-		<input type="number" id="medfil1bin" name="mfs" min="0" value="0" style="width: 60px;">
-		<label for="averfil1bin">Average moving size: </label> 
-		<input type="number" id="averfil1bin" name="avfs" min="0" value="0" style="width: 60px;">
-	</p>
-	<p style="font-size: 10px; text-align:center;"> fitplotter (c) karaul (2021) </p>
+      <div
+        class="column2"
+        id="map"
+        style="
+          width: 50%;
+          height: 600px;
+          padding-right: 0pt;
+          margin-bottom: 10px;
+        "
+      ></div>
+    </div>
 
-</body>
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <span>
+          <label for="lineThickness">线条粗细: &nbsp 颜色:</label> <br />
+          <select name="lineThickness" id="lineThickness" style="border: 5px">
+            <option value="0.5">&nbsp &nbsp &nbsp &nbsp &nbsp 0.5</option>
+            <option value="1">&nbsp &nbsp &nbsp &nbsp &nbsp 1.0</option>
+            <option value="2">&nbsp &nbsp &nbsp &nbsp &nbsp 2.0</option>
+            <option value="4">&nbsp &nbsp &nbsp &nbsp &nbsp 4.0</option>
+            <option value="8">&nbsp &nbsp &nbsp &nbsp &nbsp 8.0</option>
+          </select>
+        </span>
+        <input type="color" id="lineColοr" name="lineColοr" value="#00ff00" />
+        <!-- <p>  -->
+        <!-- <label for="min">Min:</label> <input type="number" id="miny" name="miny" maxlength=5> -->
+        <!-- <label for="max">Max:</label> <input type="number" id="maxy" name="maxy" maxlength=5> -->
+        <!-- </p>  -->
+      </div>
+    </div>
 
+    <p style="line-height: 60px">
+      <label for="zoom">缩放:</label>
+      <select name="zoom" id="zoom">
+        <option value="x" selected>X轴</option>
+        <option value="xy">X和Y轴</option>
+        <option value="y">Y轴</option>
+      </select>
+      <!-- input id="saveRange" type="button" value='Save range'/> -->
+      &nbsp &nbsp
+      <label for="legendaction">&nbsp &nbsp 图例点击操作:</label>
+      <select name="legendaction" id="legendaction">
+        <option value="hide_show">显示/隐藏曲线</option>
+        <option value="change">粗细/颜色</option>
+        <option value="remove_curve">删除曲线</option>
+        <option value="filter_curve">应用曲线滤波</option>
+      </select>
+      &nbsp &nbsp
+      <label for="medfil1bin">中值滤波大小: </label>
+      <input
+        type="number"
+        id="medfil1bin"
+        name="mfs"
+        min="0"
+        value="0"
+        style="width: 60px"
+      />
+      <label for="averfil1bin">移动平均大小: </label>
+      <input
+        type="number"
+        id="averfil1bin"
+        name="avfs"
+        min="0"
+        value="0"
+        style="width: 60px"
+      />
+    </p>
+    <p style="font-size: 10px; text-align: center">
+      fitplotter (c) karaul (2021)/硅基动感数据支持 by 李二牛
+    </p>
+  </body>
 </html>
